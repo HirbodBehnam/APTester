@@ -1,0 +1,22 @@
+{
+	"version": 2,
+	"packages": [
+		{
+			"name": "Compile Project",
+			"score": 0,
+			"tests": [
+				"compileTest"
+			],
+			"aggregator": "sum"
+		},
+		{
+			"name": "Test Project",
+			"score": 2,
+			"tests": [
+				"judgeTest[0]",
+				"judgeTest[1]"
+			],
+			"aggregator": "sum"
+		}
+	]
+}
