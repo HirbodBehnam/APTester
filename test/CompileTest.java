@@ -14,19 +14,22 @@ public class CompileTest {
 
     public static CompileStatus compileStatus = CompileStatus.PENDING;
 
+    // Compile the project only if compileStatus is not pending
     public static void compileProject() {
         if (compileStatus != CompileStatus.PENDING)
             return;
+        // Compile with javac
         System.out.println("COMPILING");
         try {
             ProcessBuilder pb = new ProcessBuilder("javac", "Main.java");
-            pb.directory(new File(APTest.javaFilePath));
+            pb.directory(new File(APTest.javaFilePath)); // Compile in source folder
             Process p = pb.start();
             Scanner scanner = new Scanner(p.getErrorStream());
-            if (p.waitFor() != 0) {
+            if (p.waitFor() != 0) { // Check for compile errors
+                System.out.println("COMPILE FAILED");
+                System.err.println("COMPILE FAILED:");
                 while (scanner.hasNextLine())
                     System.err.println(scanner.nextLine());
-                System.err.println("COMPILE FAILED:");
                 compileStatus = CompileStatus.FAILED;
                 return;
             }

@@ -17,6 +17,15 @@
 				"judgeTest[1]"
 			],
 			"aggregator": "sum"
+		},
+		{
+			"name": "Runtime Check",
+			"score": 0,
+			"tests": [
+				"runtimeTest[0]",
+				"runtimeTest[1]"
+			],
+			"aggregator": "sum"
 		}
 	]
 }
