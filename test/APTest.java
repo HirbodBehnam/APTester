@@ -19,12 +19,38 @@ public class APTest {
     private final static String testsPath = "src/test/java/in";
     private final static String inputFilePathPrefix = "src/test/java/in/input";
     private final static String outputFilePathPrefix = "src/test/java/out/output";
-    private final static String runtimeErrorMessage = "Runtime error";
 
-    // This is a map of inputFilename -> result
-    // If a key doesn't exist it means that we have to judge the test
-    // Also "" means that the test was ok
-    private final static HashMap<String, String> resultMap = new HashMap<>();
+    /**
+     * This enum simply defines the test result
+     */
+    enum TestResult {
+        PASS,
+        RUNTIME_ERROR,
+        WRONG_ANSWER,
+        EXCEPTION_IN_JUDGE; // This should never happen
+
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case PASS:
+                    return "PASS";
+                case WRONG_ANSWER:
+                    return "Wrong Answer";
+                case RUNTIME_ERROR:
+                    return "Runtime Error";
+                case EXCEPTION_IN_JUDGE:
+                    return "Judge Error";
+            }
+            return super.toString();
+        }
+    }
+
+    /**
+     * This is a map of inputFilename -> result of test
+     * If a key doesn't exist it means that we have to judge the test
+     */
+    private final static HashMap<String, TestResult> resultMap = new HashMap<>();
 
     @Parameterized.Parameter(0)
     public String inputFilePath;
@@ -37,7 +63,7 @@ public class APTest {
         int numberOfTests = Objects.requireNonNull(new File(testsPath).listFiles(
                 (dir, name) -> name.matches("input[0-9]+.txt"))
         ).length;
-        System.err.println("Found " + numberOfTests + " tests");
+        System.out.println("Found " + numberOfTests + " tests");
         // Create the parameters
         Object[][] retVal = new Object[numberOfTests][2];
         for (int i = 1; i <= numberOfTests; i++) {
@@ -49,35 +75,40 @@ public class APTest {
 
     @BeforeClass
     public static void compileFiles() {
+        // Compile project at first
         CompileTest.compileProject();
     }
 
     @Test
     public void judgeTest() {
+        // Fail if there is a compile error
         if (CompileTest.compileStatus != CompileTest.CompileStatus.COMPILED)
             Assert.fail("no code to run! (Compile error)");
-        String result = getResultOrCheckIfNeeded(inputFilePath, outputFilePath);
-        if (!result.isEmpty())
-            Assert.fail(result);
+        // Fail on anything but PASS
+        TestResult result = getResultOrCheckIfNeeded(inputFilePath, outputFilePath);
+        if (result != TestResult.PASS)
+            Assert.fail(result.toString());
     }
 
     @Test
     public void runtimeTest() {
+        // Fail if there is a compile error
         if (CompileTest.compileStatus != CompileTest.CompileStatus.COMPILED)
             Assert.fail("no code to check! (Compile error)");
-        if (getResultOrCheckIfNeeded(inputFilePath, outputFilePath).equals(runtimeErrorMessage))
-            Assert.fail(runtimeErrorMessage);
+        // Fail if there is a runtime
+        if (getResultOrCheckIfNeeded(inputFilePath, outputFilePath) == TestResult.RUNTIME_ERROR)
+            Assert.fail(TestResult.RUNTIME_ERROR.toString());
     }
 
-    private static String getResultOrCheckIfNeeded(String inputFilePath, String outputFilePath) {
+    private static TestResult getResultOrCheckIfNeeded(String inputFilePath, String outputFilePath) {
         if (resultMap.containsKey(inputFilePath))
             return resultMap.get(inputFilePath);
-        String result = testCode(inputFilePath, outputFilePath);
+        TestResult result = testCode(inputFilePath, outputFilePath);
         resultMap.put(inputFilePath, result);
         return result;
     }
 
-    private static String testCode(String inputFilePath, String outputFilePath) {
+    private static TestResult testCode(String inputFilePath, String outputFilePath) {
         // Debug stuff
         System.out.println("TEST:");
         System.out.println(inputFilePath);
@@ -95,13 +126,14 @@ public class APTest {
                 Scanner sc = new Scanner(p.getErrorStream());
                 while (sc.hasNextLine())
                     System.err.println(sc.nextLine());
-                return runtimeErrorMessage;
+                return TestResult.RUNTIME_ERROR;
             }
             // Check answer
-            return ok ? "" : "Wrong answer";
+            return ok ? TestResult.PASS : TestResult.WRONG_ANSWER;
         } catch (IOException | InterruptedException e) {
+            System.err.println("JUDGE EXCEPTION ON TEST " + inputFilePath);
             e.printStackTrace();
-            return "Process killed or something IDK";
+            return TestResult.EXCEPTION_IN_JUDGE;
         }
     }
 

@@ -34,6 +34,7 @@ public class CompileTest {
                 return;
             }
         } catch (InterruptedException | IOException e) {
+            System.err.println("JUDGE COMPILE EXCEPTION");
             e.printStackTrace();
             compileStatus = CompileStatus.FAILED;
             return;
