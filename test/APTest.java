@@ -141,11 +141,22 @@ public class APTest {
     private static boolean answerIsOk(String outputFilePath, Scanner resultScanner) {
         try {
             Scanner outputScanner = new Scanner(new FileInputStream(outputFilePath));
-            while (outputScanner.hasNextLine() && resultScanner.hasNextLine())
-                if (!(outputScanner.nextLine().trim().equals(resultScanner.nextLine().trim())))
+            int lineNumber = 0;
+            while (outputScanner.hasNextLine() && resultScanner.hasNextLine()) {
+                lineNumber++;
+                String outputLine = outputScanner.nextLine().trim();
+                String resultLine = resultScanner.nextLine().trim();
+                if (!outputLine.equals(resultLine)) {
+                    System.out.println("wrong answer because of line missmatch on " + lineNumber + ":");
+                    System.out.println(outputLine);
+                    System.out.println(resultLine);
                     return false;
-            if (outputScanner.hasNextLine() || resultScanner.hasNextLine())
+                }
+            } 
+            if (outputScanner.hasNextLine() || resultScanner.hasNextLine()) {
+                System.out.println("wrong answer because of dangling line");
                 return false;
+            }
         } catch (FileNotFoundException e) {
             System.err.println("cannot open the output file of test: " + outputFilePath);
             e.printStackTrace();

@@ -18,6 +18,20 @@ public class CompileTest {
     public static void compileProject() {
         if (compileStatus != CompileStatus.PENDING)
             return;
+        // Get javac version
+        try {
+            ProcessBuilder pb = new ProcessBuilder("javac", "-version");
+            Process p = pb.start();
+            Scanner scanner = new Scanner(p.getErrorStream());
+            p.waitFor();
+            while (scanner.hasNextLine())
+                System.out.println(scanner.nextLine());
+        } catch (InterruptedException | IOException e) {
+            System.err.println("JUDGE COMPILE EXCEPTION");
+            e.printStackTrace();
+            compileStatus = CompileStatus.FAILED;
+            return;
+        }
         // Compile with javac
         System.out.println("COMPILING");
         try {
