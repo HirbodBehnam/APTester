@@ -1,0 +1,25 @@
+فایل ارسالی .zip شما باید ویژگی های زیر را داشته باشد:
++ برای ارسال پاسخ های خود، تمامِ محتویاتِ پوشه‌ی src خود را در یک فایل زیپ قرار دهید و آن فایل زیپ را ارسال کنید. برای مثال فایلِ زیپِ شما باید ساختاری مانند زیر داشته باشد:
+```
+├── Class1.java
+├── Class2.java
+├── Main.java
+├── Package1
+│   ├── Class3.java
+│   └── Class4.java
+└── Package2
+      ├── Class5.java
+      └── Class6.java
+``` 
++ همان گونه که در دیاگرام بالا نشان داده شده است، entry point شما باید نام Main.java را داشته باشد یعنی این فایل درون هیچ پوشه (package) دیگری نباشد.
+
+حالت‌های مختلف نتیجه‌ی جاج به شرح زیر است:
+```
+❌ compileTest -> Your code does not compile (check imports?)
+❌ judgeProject[i] | ❌ runtimeCheck[i] -> Your code throws runtime exception on test number i
+❌ judgeProject[i] | ✅ runtimeCheck[i] -> Your code produces wrong answer on test number i
+✅ judgeProject[i] | ✅ runtimeCheck[i] -> GG
+```
+دقت کنید فقط زمانی نمره‌ی یک تست را می‌گیرید که تست `judgeProject` PASS شود.
+
+در صورتی که کد شما کلا کامپایل نمی‌شود به کمک دکمه‌ی اجرای تست نمونه می‌توانید دلیل آن را مشاهده کنید.

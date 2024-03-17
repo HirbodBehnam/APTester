@@ -22,6 +22,8 @@ the `test` array must look like this:
 
 Do the exact same thing with `tests` array in `Runtime Check` just like the example.
 
+The judge type must be `junit`.
+
 ## What does results mean?
 
 The test result looks like this:
